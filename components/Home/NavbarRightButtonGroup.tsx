@@ -26,6 +26,7 @@ import getFlagCountAPI from "../Flag/api/getFlagCountAPI";
 import Link from "next/link";
 import Notification from "~/components/Notifications/Notification";
 import RscBalanceButton from "./RscBalanceButton";
+import { AnnonymousButton } from "./AnnonymousButton";
 
 type Props = {
   // intentionally accessing redux directly because functional call to redux is problematic at server level
@@ -40,12 +41,17 @@ function NavbarRightButtonGroup({
   walletLink,
 }: Props): ReactElement {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isAnnonymous, setIsAnnonymous] = useState<boolean>(false);
   const [openCaseCounts, setOpenCaseCounts] = useState(0);
   const avatarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isLoggedIn = user?.id ?? null;
   const isUserModerator = Boolean(user?.moderator);
   const isUserHubEditor = Boolean(user?.author_profile?.is_hub_editor);
+
+  const handleAnnonymousClick = () => {
+    setIsAnnonymous(!isAnnonymous);
+  };
 
   useEffect((): (() => void) => {
     const handleOutsideClick = (event): void => {
@@ -107,7 +113,9 @@ function NavbarRightButtonGroup({
             styles.borderNone,
             styles.noPaddingLeft
           )}
+
         >
+          <AnnonymousButton annonymous={isAnnonymous} />
           <RscBalanceButton />
           <div
             className={css(styles.avatarContainer)}
