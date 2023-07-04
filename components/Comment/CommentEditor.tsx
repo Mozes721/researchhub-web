@@ -34,6 +34,7 @@ import config from "./lib/config";
 import { ClipLoader } from "react-spinners";
 import { RootState } from "~/redux";
 import { isEmpty as isInputEmpty } from "~/config/utils/nullchecks";
+import AnonymousToggle from "./CommentAnonymously";
 import ResearchCoinIcon from "../Icons/ResearchCoinIcon";
 import Bounty from "~/config/types/bounty";
 import { ModalActions } from "~/redux/modals";
@@ -73,7 +74,9 @@ const CommentEditor = ({
   focusOnMount = false,
   handleClose,
   editorStyleOverride,
+
 }: CommentEditorArgs) => {
+  const [isAnonymous, setIsAnonymous] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const editorRef = useRef<any>(null);
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
@@ -177,6 +180,7 @@ const CommentEditor = ({
         ...(commentId && { id: commentId }),
         ...(!commentId && { commentType: _commentType }),
         ...(interimBounty && { bountyAmount: interimBounty.amount }),
+        isAnonymous,
       });
 
       dangerouslySetContent({});
@@ -218,7 +222,11 @@ const CommentEditor = ({
               <FontAwesomeIcon icon={faTimes} />
             </IconButton>
           )}
-
+          <AnonymousToggle
+            id={commentId as string}
+            isAnonymous={isAnonymous}
+            onToggle={() => setIsAnonymous(!setIsAnonymous)}
+        />
           {allowBounty && (
             <>
               {interimBounty ? (

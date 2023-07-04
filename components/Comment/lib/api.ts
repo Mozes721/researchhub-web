@@ -1,16 +1,19 @@
-import {
-  ID,
-  RHUser,
-  RhDocumentType,
-  parseUser,
-} from "~/config/types/root_types";
-import { Comment, parseComment, COMMENT_TYPES } from "./types";
-import API, { generateApiUrl, buildQueryString } from "~/config/api";
+import { COMMENT_TYPES, Comment, parseComment } from "./types";
 import { Helpers } from "@quantfive/js-web-config";
+import { ID, RhDocumentType } from "~/config/types/root_types";
+import { parseVote, Vote } from "~/config/types/vote";
+import API, { buildQueryString, generateApiUrl } from "~/config/api";
 import config from "./config";
 import { sortOpts } from "./options";
-import { parseVote, Vote } from "~/config/types/vote";
 import uniqBy from "lodash/uniqBy";
+import { buildApiUri } from "~/config/utils/buildApiUri";
+
+
+type AnonArgs = {
+  id: ID;
+  
+  onError: (error: Error) => void;
+};
 
 export const fetchCommentsAPI = async ({
   documentType,
@@ -331,3 +334,17 @@ export const updatePeerReview = ({
     .then(Helpers.checkStatus)
     .then(Helpers.parseJSON);
 };
+
+export function toggleUserAnonymity({ onError, id }: AnonArgs): void {
+  fetch(
+    buildApiUri({
+      apiPath: `annonymize/${id}/`,
+    }),
+    API.POST_CONFIG({})
+  )
+    .then(Helpers.checkStatus)
+    .then(Helpers.parseJSON)
+    .catch((error: any): void => {
+      onError(error);
+    });
+}
